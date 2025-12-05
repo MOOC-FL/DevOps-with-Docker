@@ -1,1 +1,4 @@
-
+#### What is DevOps?​
+- Before we get started with Docker let's lay the groundwork for learning the right mindset. Defining DevOps is not a trivial task but the term itself consists of two parts, Dev and Ops. Dev refers to the development of software and Ops to operations. Simple definition for DevOps would be that it means the release configuring, and monitoring of software is in the hands of the very people who develop it.
+- A more formal definition is offered by Jabbari et al.(opens in a new tab)(opens in a new tab): "DevOps is a development methodology aimed at bridging the gap between Development and Operations, emphasizing communication and collaboration, continuous integration, quality assurance and delivery with automated deployment utilizing a set of development practices".
+  ![DevOps]([https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png](https://courses.mooc.fi/api/v0/files/course/03317330-6e94-44b0-a138-603dd2a54c0b/images/zlp3lmB43bMwPJyZwwp0AafzDhbOSF.png))
