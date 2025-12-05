@@ -46,3 +46,28 @@ $ docker container ls -a | grep hello-world
 - After removing all of the hello-world containers, `run d`ocker image rm hello-world` to delete the image. You can use `docker image ls` to confirm that the image is not listed.
 
 - You can also use the `image pull` command to download images without running them: so docker `image pull hello-world` would bring the image back to our computer.
+ #### new container 
+ ```bash
+$ docker run nginx
+```
+- With some containers the command line appears to freeze after pulling and starting the container. This might be because that particular container is now running in the current terminal, blocking the input. You can observe this with `docker container ls` from another terminal. In this situation one can exit by pressing `control + c` and try again with the `-d` flag.
+```bash
+$ docker run -d nginx
+  c7749cf989f61353c1d433466d9ed6c45458291106e8131391af972c287fb0e5
+```
+- The `-d ` flag starts a container detached, meaning that it runs in the background. The container can be seen with
+```bash
+$ docker container ls
+  CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+  c7749cf989f6        nginx               "nginx -g 'daemon of…"   35 seconds ago      Up 34 seconds       80/tcp              blissful_wright
+```
+- Now if we try to remove it, it will fail:
+```bash
+$ docker container rm blissful_wright
+  Error response from daemon: You cannot remove a running container c7749cf989f61353c1d433466d9ed6c45458291106e8131391af972c287fb0e5. Stop the container before attempting removal or force remove
+```
+> We should first stop the container using `docker container stop blissful_wright`, and then use rm.
+
+> Forcing is also a possibility and we can use `docker container rm --force blissful_wright` safely in this case. Again for both of them instead of name we could have used the ID or parts of it, e.g. c77.
+
+> It's common for the Docker daemon to become clogged over time with old images and containers.
