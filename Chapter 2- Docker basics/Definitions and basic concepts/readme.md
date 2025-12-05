@@ -7,3 +7,5 @@ $ docker container run hello-world
 ```bash
 $ docker run hello-world
 ```
+#### Docker CLI basics​
+- 
