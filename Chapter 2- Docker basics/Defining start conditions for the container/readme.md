@@ -1,1 +1,2 @@
+- Next, we will start moving towards a more meaningful image. yt-dlp(opens in a new tab)(opens in a new tab) is a program that downloads YouTube and Imgur(opens in a new tab)(opens in a new tab) videos. Let's add it to an image - but this time, we will change our process. Instead of our current process where we add things to the Dockerfile and hope it works, let's try another approach. This time we will open up an interactive session and test stuff before "storing" it in our Dockerfile.
 
