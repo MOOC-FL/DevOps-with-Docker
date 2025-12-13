@@ -182,11 +182,89 @@ $ docker run yt-dlp https://www.youtube.com/watch?v=DptFY_MszQs
 | Mixed 2 | Shell form ENTRYPOINT + Exec form CMD | ❌ **Avoid** - CMD arguments go to shell, not command |
 
 
+- As the command at the end of `docker run` will be the CMD we want to use ENTRYPOINT to specify what to run, and CMD to specify which command (in our case url) to run.
+- **Most of the time** we can ignore ENTRYPOINT when building our images and only use CMD. For example, Ubuntu image defaults the ENTRYPOINT to sh so we do not have to worry about it. And it gives us the convenience of allowing us to overwrite the CMD easily, for example, with bash to go inside the container.
+- We can test how some other projects do this. Let's try Python:
+```bash
+$ docker pull python:3.11
+...
+$ docker run -it python:3.11
+Python 3.11.8 (main, Feb 13 2025, 09:03:56) [GCC 12.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> print("Hello, World!")
+Hello, World!
+>>> exit()
 
+$ docker run -it python:3.11 --version
+  docker: Error response from daemon: OCI runtime create failed: container_linux.go:370: starting container process caused: exec: "--version": executable file not found in $PATH: unknown.
 
+$ docker run -it python:3.11 bash
+  root@1b7b99ae2f40:/#
+```
+- From this experiment, we learned that they have ENTRYPOINT as something other than Python, but the CMD is Python and we can overwrite it, here with bash. If they had ENTRYPOINT as Python we'd be able to run `--version`. We can create our own image for personal use as we did in a previous exercise with a new Dockerfile:
+```bash
+FROM python:3.11
+ENTRYPOINT ["python3"]
+CMD ["--help"]
+```
+- The result is an image that has Python as ENTRYPOINT and you can add the commands at the end, for example --version to see the version. Without overwriting the command, it will output the help.
+- Now we have two problems with the yt-dlp project:
+1. Major: The downloaded files stay in the container
+2. Minor: Our container build process creates many layers resulting in increased image size
+We will fix the major issue first. The minor issue will get our attention in chapter 4.
+- - By inspecting `docker container ls -a` we can see all our previous runs. When we filter this list with
+```bash
+$ docker container ls -a --last 3
 
+  CONTAINER ID        IMAGE               COMMAND                   CREATED                  STATUS                          PORTS               NAMES
+  be9fdbcafb23        yt-dlp          "/usr/local/bin/yout…"    Less than a second ago   Exited (0) About a minute ago                       determined_elion
+  b61e4029f997        f2210c2591a1        "/bin/sh -c \"/usr/lo…"   Less than a second ago   Exited (2) About a minute ago                       vigorous_bardeen
+  326bb4f5af1e        f2210c2591a1        "/bin/sh -c \"/usr/lo…"   About a minute ago       Exited (2) 3 minutes ago                            hardcore_carson
+```
+- We see that the last container was `be9fdbcafb23` or `determined_elion` for us humans.
+```bash
+$ docker diff determined_elion
+  C /mydir
+  A /mydir/Welcome to Kumpula campus! ｜ University of Helsinki [DptFY_MszQs].mkv
+  C /root
+  A /root/.cache
+  A /root/.cache/yt-dlp
+  A /root/.cache/yt-dlp/youtube-nsig
+  A /root/.cache/yt-dlp/youtube-nsig/0004de42-main.json
+```
+- Let's try `docker cp` command to copy the file from the container to the host machine. We should use quotes now since the filename has spaces.
+```bash
+$ docker cp "determined_elion://mydir/Welcome to Kumpula campus! ｜ University of Helsinki [DptFY_MszQs].mkv" .
+```
+- And now we have our file locally and we can watch it if there is a suitable player installed. Sadly, the use of `docker cp` is not proper to fix our issue. In the next section, we will have a better solution.
 
+#### Improved curler​
+- With `ENTRYPOINT` we can make the curler of the Exercise 1.7. more flexible.
+Change the script so that it takes the first argument as the input:
+```bash
+#!/bin/bash
 
+echo "Searching..";
+sleep 1;
+curl http://$1;
+```
+- And change the CMD to ENTRYPOINT with the format `["./script.sh"].` Now we can run
+```bash
+$ docker build . -t curler-v2
+$ docker run curler-v2 helsinki.fi
+
+  Searching..
+    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                   Dload  Upload   Total   Spent    Left  Speed
+  100   232  100   232    0     0  13647      0 --:--:-- --:--:-- --:--:-- 13647
+  <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+  <html><head>
+  <title>301 Moved Permanently</title>
+  </head><body>
+  <h1>Moved Permanently</h1>
+  <p>The document has moved <a href="https://www.helsinki.fi/">here</a>.</p>
+  </body></html>
+```
 
 
 
