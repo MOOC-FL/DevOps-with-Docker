@@ -163,6 +163,24 @@ $ docker run yt-dlp https://www.youtube.com/watch?v=DptFY_MszQs
 
 - In the shell form, the command is provided as a string without brackets. In the exec form the command and its arguments are provided as a list (with brackets), see the table below:
 
+| ENTRYPOINT Form | CMD Form | Resulting Command | Explanation |
+|----------------|----------|-------------------|-------------|
+| **Shell form**<br>`ENTRYPOINT /bin/ping -c 3` | **Shell form**<br>`CMD localhost` | `/bin/sh -c '/bin/ping -c 3' /bin/sh -c localhost` | Both run in shell. CMD is ignored by ENTRYPOINT's shell. `localhost` becomes `$0` for ENTRYPOINT's shell, not passed to `ping`. **Broken** |
+| **Exec form**<br>`ENTRYPOINT ["/bin/ping","-c","3"]` | **Shell form**<br>`CMD localhost` | `/bin/ping -c 3 /bin/sh -c localhost` | ENTRYPOINT runs directly. CMD string `/bin/sh -c localhost` is passed as argument to `ping`. **Broken** |
+| **Shell form**<br>`ENTRYPOINT /bin/ping -c 3` | **Exec form**<br>`CMD ["localhost"]` | `/bin/sh -c '/bin/ping -c 3' localhost` | ENTRYPOINT runs in shell. `localhost` becomes `$0` for the shell, not passed to `ping`. **Broken** |
+| **Exec form**<br>`ENTRYPOINT ["/bin/ping","-c","3"]` | **Exec form**<br>`CMD ["localhost"]` | `/bin/ping -c 3 localhost` | **CORRECT** - ENTRYPOINT runs directly with CMD as argument. Can override `localhost` at runtime |
+
+---
+
+### **Summary Table - Best Practices:**
+
+| Form Type | ENTRYPOINT | CMD | Recommendation |
+|-----------|------------|-----|----------------|
+| Shell form | `ENTRYPOINT command arg1 arg2` | `CMD arg3 arg4` | ❌ **Avoid** - CMD ignored, no PID 1 signal handling |
+| Exec form | `ENTRYPOINT ["executable", "arg1", "arg2"]` | `CMD ["arg3", "arg4"]` | ✅ **Recommended** - Predictable, overrideable arguments |
+| Mixed 1 | Exec form ENTRYPOINT + Shell form CMD | ❌ **Avoid** - Shell string becomes literal argument |
+| Mixed 2 | Shell form ENTRYPOINT + Exec form CMD | ❌ **Avoid** - CMD arguments go to shell, not command |
+
 
 
 
