@@ -11,6 +11,9 @@
 - Building and running custom images
 - Environment variables
 - Docker Hub and pushing images
+<p align="center">
+  <img src="https://github.com/MOOC-FL/Media/blob/main/Devops%20With%20Docker/certificate.png" alt="">
+</p>
 
 ### **Part 2** – More Advanced Docker Concepts
 - Debugging containers (logs, exec)
@@ -19,6 +22,9 @@
 - Volumes and persistent data
 - Optimizing images (layers, multi-stage builds)
 - Security best practices
+<p align="center">
+  <img src="https://github.com/MOOC-FL/Media/blob/main/Devops%20With%20Docker/certificate%20(1).png" alt="">
+</p>
 
 ### **Part 3** – Towards Orchestration & Production
 - Introduction to container orchestration concepts
@@ -27,3 +33,7 @@
 - Introduction to Docker Swarm (basics)
 - Preparing for Kubernetes (transition to the next course)
 
+
+<p align="center">
+  <img src="https://github.com/MOOC-FL/Media/blob/main/Devops%20With%20Docker/certificate%20(2).png" alt="">
+</p>
